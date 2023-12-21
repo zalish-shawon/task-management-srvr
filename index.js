@@ -35,9 +35,33 @@ async function run() {
   app.post("/tasks", async(req, res) => {
     const task = req.body;
      console.log(task);
-    // const result = await taskCollection.insertOne(task);
-    // res.send(result);
+    const result = await taskCollection.insertOne(task);
+    res.send(result);
 });
+
+app.put('/tasks/:taskId', async (req, res) => {
+  const { taskId } = req.params;
+  const { status } = req.body;
+
+  try {
+    // Find the task by ID and update its status
+    const updatedTask = await taskCollection.findOneAndUpdate(
+      { _id: new ObjectId(taskId) },
+      { $set: { status } },
+      { returnDocument: 'after' }
+    );
+
+    if (!updatedTask.value) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    res.json(updatedTask.value);
+  } catch (error) {
+    console.error('Error updating task status:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 
 
