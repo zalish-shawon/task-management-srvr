@@ -39,7 +39,7 @@ async function run() {
     res.send(result);
 });
 
-app.put('/tasks/:taskId', async (req, res) => {
+app.patch('/tasks/:taskId', async (req, res) => {
   const { taskId } = req.params;
   const { status } = req.body;
 
@@ -62,6 +62,24 @@ app.put('/tasks/:taskId', async (req, res) => {
   }
 });
 
+
+app.put("/tasks/:id", async (req, res) => {
+  const id = req.params.id;
+  const filter = {_id: new ObjectId(id)};
+  const options = {upsert: true};
+  const updatedTask = req.body
+  const task = {
+    $set: {
+
+      name: updatedTask.name,
+       description: updatedTask.description,
+       date: updatedTask.date,
+       priority: updatedTask.priority,
+  }
+}
+const result = await taskCollection.updateOne(filter,task, options)
+res.send(result);
+})
 
 
 
